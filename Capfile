@@ -91,17 +91,18 @@ namespace :deploy do
   task :config do
     run <<-SCRIPT
       set -e;
-      [[ -f /usr/bin/figlet ]] && figlet config | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      [[ -f /usr/bin/figlet ]] && figlet graphite configs| perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path}/conf/;
-      cp carbon.conf.example carbon.conf;
-      cp storage-schemas.conf.example storage-schemas.conf;
-      mkdir example/;
-      mv *.example example/;
+      cp -v carbon.conf.example carbon.conf;
+      cp -v storage-schemas.conf.example storage-schemas.conf;
+      mkdir -pv example/;
+      mv -v *.example example/;
 
+      [[ -f /usr/bin/figlet ]] && figlet apache configs| perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path};
-      cp src/myvirtualdjango.py webapp/
-      cp src/graphite.apache.conf conf/
-      sudo ln -sf #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
+      cp -v src/myvirtualdjango.py webapp/;
+      cp -v src/graphite.apache.conf conf/;
+      sudo ln -sfv #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
     SCRIPT
   end
 
