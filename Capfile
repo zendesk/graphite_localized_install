@@ -88,8 +88,8 @@ namespace :deploy do
       mkdir example/;
       mv *.example example/;
 
-      mv ../src/graphite.apache.conf .
-      sudo ln -sf #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite
+      mv ../src/graphite.apache.conf .;
+      sudo ln -sf #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
     SCRIPT
   end
 end
