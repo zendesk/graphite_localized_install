@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 load 'deploy'
 
 set :application, "graphite_install"
