@@ -32,8 +32,12 @@ namespace :deploy do
 
   task :finalize_update do ; end
 
-  task :permissions do
-    run "sudo chown -Rfv #{user}.#{user} #{deploy_to}"
+  task :setup_perms do
+    run "sudo chown -Rv #{user}.#{user} #{deploy_to}"
+  end
+
+  task :apache_perms do
+    run "sudo chown -Rv www-data:www-data #{release_path}/storage/"
   end
 
   task :virtualenv do
@@ -118,9 +122,9 @@ namespace :deploy do
   end
 end
 
-after "deploy:setup","deploy:permissions"
+after "deploy:setup","deploy:setup_perms"
 after "deploy:update_code","deploy:virtualenv"
 after "deploy:virtualenv","deploy:graphite"
-after "deploy:graphite","deploy:config"
+after "deploy:graphite","deploy:config","deploy:apache_perms"
 after "deploy:config","deploy:database"
 
