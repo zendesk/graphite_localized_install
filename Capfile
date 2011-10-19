@@ -20,9 +20,8 @@ set :runner, "zendesk"
 namespace :deploy do
   task :start do ; end
   task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
-  end
+  task :restart, :roles => :app, :except => { :no_release => true } do ; end
+  task :finalize_update do ; end
 
   task :permissions do
     run "sudo chown -Rfv #{user}.#{user} #{deploy_to}"
