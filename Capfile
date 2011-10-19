@@ -18,9 +18,18 @@ set :user, "zendesk"
 set :runner, "zendesk"
 
 namespace :deploy do
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do ; end
+  task :start do
+    run "sudo /etc/init.d/apache2 start"
+  end
+
+  task :stop do
+    run "sudo /etc/init.d/apache2 stop"
+  end
+
+  task :restart, :roles => :app, :except => { :no_release => true } do
+    run "sudo /etc/init.d/apache2 reload"
+  end
+
   task :finalize_update do ; end
 
   task :permissions do
@@ -82,6 +91,7 @@ namespace :deploy do
   task :config do
     run <<-SCRIPT
       set -e;
+      [[ -f /usr/bin/figlet ]] && figlet config | perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path}/conf/;
       cp carbon.conf.example carbon.conf;
       cp storage-schemas.conf.example storage-schemas.conf;
@@ -92,10 +102,22 @@ namespace :deploy do
       sudo ln -sf #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
     SCRIPT
   end
+
+  task :database do
+    run <<-SCRIPT
+      set -e;
+      [[ -f /usr/bin/figlet ]] && figlet database | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      cd #{release_path}/;
+      source .pvm/bin/activate;
+      cd webapp/graphite/;
+      echo no | python manage.py syncdb;
+    SCRIPT
+  end
 end
 
 after "deploy:setup","deploy:permissions"
 after "deploy:update_code","deploy:virtualenv"
 after "deploy:virtualenv","deploy:graphite"
 after "deploy:graphite","deploy:config"
+after "deploy:config","deploy:database"
 
