@@ -64,7 +64,7 @@ namespace :deploy do
       [[ -f /usr/bin/figlet ]] && figlet carbon | perl -pe 's{( +)}{chr(46) x length($1)}e';
       tar xfz carbon-0.9.9.tar.gz;
       cd carbon-0.9.9/;
-      sed -i s#opt#"#{release_path}"# setup.cfg;
+      sed -i s#"/opt/graphite"#"#{release_path}"# setup.cfg;
       python setup.py install;
       cd ..;
       rm -r carbon-0.9.9/;
@@ -72,7 +72,7 @@ namespace :deploy do
       [[ -f /usr/bin/figlet ]] && figlet graphite-web | perl -pe 's{( +)}{chr(46) x length($1)}e';
       tar xfz graphite-web-0.9.9.tar.gz;
       cd graphite-web-0.9.9/;
-      sed -i s#opt#"#{release_path}"# setup.cfg;
+      sed -i s#"/opt/graphite"#"#{release_path}"# setup.cfg;
       python setup.py install;
       cd ..;
       rm -r graphite-web-0.9.9/;
