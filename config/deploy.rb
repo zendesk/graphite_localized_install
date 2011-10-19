@@ -29,20 +29,53 @@ namespace :deploy do
       set -e;
       [[ -f /usr/bin/figlet ]] && figlet virtualenv | perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path};
-      virtualenv .pvm;
+      virtualenv -q .pvm;
       source .pvm/bin/activate;
 
       [[ -f /usr/bin/figlet ]] && figlet twisted | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install twisted;
+      easy_install -q twisted;
 
       [[ -f /usr/bin/figlet ]] && figlet django | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install django;
+      easy_install -q django;
 
       [[ -f /usr/bin/figlet ]] && figlet django-tagging | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install django-tagging;
+      easy_install -q django-tagging;
+    SCRIPT
+  end
+
+  task :graphite do
+    run <<-SCRIPT
+      set -e;
+      cd #{release_path};
+      source .pvm/bin/activate;
+      cd src/;
+
+      [[ -f /usr/bin/figlet ]] && figlet whisper | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      tar xfz whisper-0.9.9.tar.gz;
+      cd whisper-0.9.9/;
+      python setup.py install;
+      cd ..;
+      rm -r whisper-0.9.9/;
+
+      [[ -f /usr/bin/figlet ]] && figlet carbon | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      tar xfz carbon-0.9.9.tar.gz;
+      cd carbon-0.9.9/;
+      sed -i s#opt#"#{release_path}"# setup.cfg;
+      python setup.py install;
+      cd ..;
+      rm -r carbon-0.9.9/;
+
+      [[ -f /usr/bin/figlet ]] && figlet graphite-web | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      tar xfz graphite-web-0.9.9.tar.gz;
+      cd graphite-web-0.9.9/;
+      sed -i s#opt#"#{release_path}"# setup.cfg;
+      python setup.py install;
+      cd ..;
+      rm -r graphite-web-0.9.9/;
     SCRIPT
   end
 end
 
-after "deploy:update","deploy:virtualenv"
+after "deploy:update_code","deploy:virtualenv"
+after "deploy:virtualenv","deploy:graphite"
 after "deploy:setup","deploy:permissions"
