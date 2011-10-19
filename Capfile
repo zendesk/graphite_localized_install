@@ -98,7 +98,9 @@ namespace :deploy do
       mkdir example/;
       mv *.example example/;
 
-      mv ../src/graphite.apache.conf .;
+      cd #{release_path};
+      cp src/myvirtualdjango.py webapp/
+      cp src/graphite.apache.conf conf/
       sudo ln -sf #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
     SCRIPT
   end
