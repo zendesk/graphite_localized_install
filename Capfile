@@ -78,8 +78,21 @@ namespace :deploy do
       rm -r graphite-web-0.9.9/;
     SCRIPT
   end
+
+  task :config do
+    run <<-SCRIPT
+      set -e;
+      cd #{release_path}/conf/;
+      cp carbon.conf.example carbon.conf;
+      cp storage-schemas.conf.example storage-schemas.conf;
+      mkdir example/;
+      mv *.example example/;
+    SCRIPT
+  end
 end
 
+after "deploy:setup","deploy:permissions"
 after "deploy:update_code","deploy:virtualenv"
 after "deploy:virtualenv","deploy:graphite"
-after "deploy:setup","deploy:permissions"
+after "deploy:graphite","deploy:config"
+
