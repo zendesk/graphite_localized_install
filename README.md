@@ -2,10 +2,16 @@ My graphite localized install.  That means each cap deploy installs a
 localized Graphite with Python and dependancies into the release
 directory.
 
+## Instructions:
+1. git clone
+2. bundle install --path vendor/bundle
+3. bundle exec cap deploy:setup
+4. bundle exec cap deploy
+5. bundle exec cap deploy:database
+6. http://graphite
+
 ## TODO:
 * Warn when system packages are not installed.
-* Shared database between releases, maybe MySQL.
-* Carbon collection server.
 * [StatsD](https://github.com/etsy/statsd) stats aggregator.
 * [Diamond](http://opensource.brightcove.com/project/Diamond/) system
 * stats collector.
