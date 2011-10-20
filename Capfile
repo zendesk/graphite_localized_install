@@ -21,15 +21,18 @@ set :runner, "zendesk"
 namespace :deploy do
   task :start do
     run "sudo /etc/init.d/apache2 start"
+    run "#{current_path}/bin/carbon-cache.py start"
   end
 
   task :stop do
     run "sudo /etc/init.d/apache2 stop"
+    run "#{current_path}/bin/carbon-cache.py stop"
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "[[ -f /usr/bin/figlet ]] && figlet restart | perl -pe 's{( +)}{chr(46) x length($1)}e'"
-    run "sudo /etc/init.d/apache2 restart"
+    run "[[ -f /usr/bin/figlet ]] && figlet restarting | perl -pe 's{( +)}{chr(46) x length($1)}e'"
+    deploy.stop
+    deploy.start
   end
 
   task :finalize_update do; end
