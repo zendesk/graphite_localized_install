@@ -29,7 +29,7 @@ namespace :deploy do
 
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "[[ -f /usr/bin/figlet ]] && figlet restart | perl -pe 's{( +)}{chr(46) x length($1)}e'"
-    run "sudo /etc/init.d/apache2 reload"
+    run "sudo /etc/init.d/apache2 restart"
   end
 
   task :finalize_update do; end
@@ -41,7 +41,7 @@ namespace :deploy do
 
   task :apache_perms do
     run "[[ -f /usr/bin/figlet ]] && figlet apache perms | perl -pe 's{( +)}{chr(46) x length($1)}e'"
-    run "sudo chown -Rv www-data:www-data #{release_path}/storage/*"
+    run "sudo chown -Rv www-data:www-data #{release_path}/storage/ #{shared_path}/log/"
   end
 
   task :virtualenv do
