@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 load 'deploy'
+require 'capistrano_colors'
 
 set :application, "graphite_install"
 set :repository,  "git@github.com:quanghiem/graphite_localized_install.git"
