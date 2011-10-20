@@ -3,7 +3,7 @@
 load 'deploy'
 
 set :application, "graphite_install"
-set :repository,  "git@github.com:quanghiem/graphite_install.git"
+set :repository,  "git@github.com:quanghiem/graphite_localized_install.git"
 
 set :scm, :git
 
@@ -30,14 +30,14 @@ namespace :deploy do
     run "sudo /etc/init.d/apache2 reload"
   end
 
-  task :finalize_update do ; end
+  task :finalize_update do; end
 
   task :setup_perms do
     run "sudo chown -Rv #{user}.#{user} #{deploy_to}"
   end
 
   task :apache_perms do
-    run "sudo chown -Rv www-data:www-data #{release_path}/storage/"
+    run "sudo chown -Rv www-data:www-data #{release_path}/storage/*"
   end
 
   task :virtualenv do
@@ -114,10 +114,19 @@ namespace :deploy do
     run <<-SCRIPT
       set -e;
       [[ -f /usr/bin/figlet ]] && figlet database | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      cd #{release_path}/;
+      cd #{current_path}/;
       source .pvm/bin/activate;
       cd webapp/graphite/;
       echo no | python manage.py syncdb;
+    SCRIPT
+  end
+
+  task :symlink_storage, :except => { :no_release => true } do
+    run <<-SCRIPT
+      set -e;
+      [[ -f /usr/bin/figlet ]] && figlet symlink storage | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      rm -rfv #{latest_release}/storage;
+      ln -s #{shared_path}/storage #{latest_release}/storage;
     SCRIPT
   end
 end
@@ -125,6 +134,7 @@ end
 after "deploy:setup","deploy:setup_perms"
 after "deploy:update_code","deploy:virtualenv"
 after "deploy:virtualenv","deploy:graphite"
-after "deploy:graphite","deploy:config","deploy:apache_perms"
-after "deploy:config","deploy:database"
+after "deploy:graphite","deploy:config"
+after "deploy:config","deploy:symlink_storage"
+after "deploy:symlink_storage","deploy:apache_perms"
 
