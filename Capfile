@@ -125,6 +125,7 @@ namespace :deploy do
       source .pvm/bin/activate;
       cd webapp/graphite/;
       echo no | python manage.py syncdb;
+      sudo chown -v www-data.www-data #{shared_path}/storage/graphite.db;
     SCRIPT
   end
 
