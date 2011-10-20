@@ -129,9 +129,22 @@ namespace :deploy do
       ln -s #{shared_path}/storage #{latest_release}/storage;
     SCRIPT
   end
+
+  task :mkdir_storage do
+    run <<-SCRIPT
+    set -e;
+    [[ -f /usr/bin/figlet ]] && figlet mkdir storage | perl -pe 's{( +)}{chr(46) x length($1)}e';
+    mkdir -pv #{shared_path}/storage;
+    mkdir -pv #{shared_path}/storage/lists/;
+    mkdir -pv #{shared_path}/storage/rrd/;
+    mkdir -pv #{shared_path}/storage/whisper/;
+    mkdir -pv #{shared_path}/log/webapp/;
+    ln -sfv #{shared_path}/log #{shared_path}/storage/log;
+    SCRIPT
+  end
 end
 
-after "deploy:setup","deploy:setup_perms"
+after "deploy:setup","deploy:setup_perms","deploy:mkdir_storage"
 after "deploy:update_code","deploy:virtualenv"
 after "deploy:virtualenv","deploy:graphite"
 after "deploy:graphite","deploy:config"
