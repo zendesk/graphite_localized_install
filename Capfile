@@ -28,16 +28,19 @@ namespace :deploy do
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
+    run "[[ -f /usr/bin/figlet ]] && figlet restart | perl -pe 's{( +)}{chr(46) x length($1)}e'"
     run "sudo /etc/init.d/apache2 reload"
   end
 
   task :finalize_update do; end
 
   task :setup_perms do
+    run "[[ -f /usr/bin/figlet ]] && figlet setup perms | perl -pe 's{( +)}{chr(46) x length($1)}e'"
     run "sudo chown -Rv #{user}.#{user} #{deploy_to}"
   end
 
   task :apache_perms do
+    run "[[ -f /usr/bin/figlet ]] && figlet apache perms | perl -pe 's{( +)}{chr(46) x length($1)}e'"
     run "sudo chown -Rv www-data:www-data #{release_path}/storage/*"
   end
 
