@@ -8,9 +8,9 @@ set :repository,  "git@github.com:quanghiem/graphite_localized_install.git"
 
 set :scm, :git
 
-role :web, "richard2"
-role :app, "richard2"
-role :db,  "richard2", :primary => true
+role :web, "graphite"
+role :app, "graphite"
+role :db,  "graphite", :primary => true
 
 set :default_shell, "/bin/bash"
 
