@@ -33,6 +33,7 @@ namespace :deploy do
     run "[[ -f /usr/bin/figlet ]] && figlet restarting | perl -pe 's{( +)}{chr(46) x length($1)}e'"
     deploy.stop
     deploy.start
+    run "sudo sv restart statsd"
   end
 
   task :finalize_update do; end
@@ -45,6 +46,7 @@ namespace :deploy do
   task :apache_perms do
     run "[[ -f /usr/bin/figlet ]] && figlet apache perms | perl -pe 's{( +)}{chr(46) x length($1)}e'"
     run "sudo chown -Rv www-data:www-data #{release_path}/storage/ #{shared_path}/log/"
+    run "sudo chown -Rv #{user}.#{user} #{shared_path}/log/carbon-cache-a/"
   end
 
   task :virtualenv do
@@ -150,11 +152,21 @@ namespace :deploy do
     ln -sfv #{shared_path}/log #{shared_path}/storage/log;
     SCRIPT
   end
+
+  task :statsd do
+    run <<-SCRIPT
+    set -e;
+    [[ -f /usr/bin/figlet ]] && figlet statsd | perl -pe 's{( +)}{chr(46) x length($1)}e';
+    cd #{latest_release}/;
+    git clone https://github.com/etsy/statsd.git;
+    ln -sfv #{deploy_to}/config/local.js #{latest_release}/statsd/local.js
+    SCRIPT
+  end
 end
 
 after "deploy:setup","deploy:setup_perms","deploy:mkdir_storage"
 after "deploy:update_code","deploy:virtualenv"
-after "deploy:virtualenv","deploy:graphite"
+after "deploy:virtualenv","deploy:graphite","deploy:statsd"
 after "deploy:graphite","deploy:config"
 after "deploy:config","deploy:symlink_storage"
 after "deploy:symlink_storage","deploy:apache_perms"
