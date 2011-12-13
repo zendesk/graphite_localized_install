@@ -107,7 +107,7 @@ namespace :deploy do
       [[ -f /usr/bin/figlet ]] && figlet graphite configs| perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path}/conf/;
       cp -v carbon.conf.example carbon.conf;
-      cp -v storage-schemas.conf.example storage-schemas.conf;
+      ln -sfv #{deploy_to}/config/storage-schemas.conf #{latest_release}/conf/storage-schemas.conf;
       mkdir -pv example/;
       mv -v *.example example/;
 
