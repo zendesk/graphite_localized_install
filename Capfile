@@ -115,7 +115,6 @@ namespace :deploy do
       cd #{release_path};
       cp -v src/myvirtualdjango.py webapp/;
       cp -v src/graphite.apache.conf conf/;
-      sudo ln -sfv #{current_path}/conf/graphite.apache.conf /etc/apache2/sites-enabled/420-graphite;
     SCRIPT
   end
 
