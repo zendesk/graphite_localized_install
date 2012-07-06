@@ -8,9 +8,9 @@ set :repository,  "git@github.com:quanghiem/graphite_localized_install.git"
 
 set :scm, :git
 
-role :web, "graphite"
-role :app, "graphite"
-role :db,  "graphite", :primary => true
+role :web, "graph01"
+role :app, "graph01"
+role :db,  "graph01", :primary => true
 
 set :default_shell, "/bin/bash"
 
@@ -22,11 +22,13 @@ namespace :deploy do
   task :start do
     run "sudo /etc/init.d/apache2 start"
     run "#{current_path}/bin/carbon-cache.py start"
+    run "#{current_path}/bin/carbon-aggregator.py start"
   end
 
   task :stop do
     run "sudo /etc/init.d/apache2 stop"
     run "#{current_path}/bin/carbon-cache.py stop"
+    run "#{current_path}/bin/carbon-aggregator.py stop"
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
@@ -45,8 +47,9 @@ namespace :deploy do
 
   task :apache_perms do
     run "[[ -f /usr/bin/figlet ]] && figlet apache perms | perl -pe 's{( +)}{chr(46) x length($1)}e'"
-    run "sudo chown -Rv www-data:www-data #{release_path}/storage/ #{shared_path}/log/"
-    run "sudo chown -Rv #{user}.#{user} #{shared_path}/log/carbon-cache-a/"
+    run "sudo chown -R www-data:#{user} #{release_path}/storage/ #{shared_path}/log/"
+    run "sudo chmod -R g+w #{release_path}/storage/ #{shared_path}/log/"
+    run "sudo chown -R #{user}.#{user} #{shared_path}/log/carbon-cache-a/"
   end
 
   task :virtualenv do
@@ -107,7 +110,9 @@ namespace :deploy do
       [[ -f /usr/bin/figlet ]] && figlet graphite configs| perl -pe 's{( +)}{chr(46) x length($1)}e';
       cd #{release_path}/conf/;
       cp -v carbon.conf.example carbon.conf;
-      ln -sfv #{deploy_to}/config/storage-schemas.conf #{latest_release}/conf/storage-schemas.conf;
+      ln -sfv #{deploy_to}/config/storage-schemas.conf #{latest_release}/conf/;
+      ln -sfv #{deploy_to}/config/storage-aggregation.conf #{latest_release}/conf/;
+      ln -sfv #{deploy_to}/config/aggregation-rules.conf #{latest_release}/conf/;
       mkdir -pv example/;
       mv -v *.example example/;
 
@@ -148,6 +153,7 @@ namespace :deploy do
     mkdir -pv #{shared_path}/storage/rrd/;
     mkdir -pv #{shared_path}/storage/whisper/;
     mkdir -pv #{shared_path}/log/webapp/;
+    mkdir -pv #{shared_path}/log/carbon-cache-a/;
     ln -sfv #{shared_path}/log #{shared_path}/storage/log;
     SCRIPT
   end
