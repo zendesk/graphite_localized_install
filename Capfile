@@ -4,7 +4,7 @@ load 'deploy'
 require 'capistrano_colors'
 
 set :application, "graphite_install"
-set :repository,  "git@github.com:quanghiem/graphite_localized_install.git"
+set :repository,  "git@github.com:zendesk/graphite_localized_install.git"
 
 set :scm, :git
 
@@ -80,6 +80,10 @@ namespace :deploy do
       cd src/;
 
       [[ -f /usr/bin/figlet ]] && figlet whisper | perl -pe 's{( +)}{chr(46) x length($1)}e';
+      echo =================================================;
+      pwd;
+      ls -l;
+      echo =================================================;
       tar xfz whisper-0.9.10.tar.gz;
       cd whisper-0.9.10/;
       python setup.py --quiet install;
