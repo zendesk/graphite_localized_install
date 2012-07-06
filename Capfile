@@ -62,13 +62,13 @@ namespace :deploy do
       source .pvm/bin/activate;
 
       [[ -f /usr/bin/figlet ]] && figlet twisted | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install -q twisted;
+      easy_install -q twisted==12.1.0;
 
       [[ -f /usr/bin/figlet ]] && figlet django | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install -q django;
+      easy_install -q django==1.3.1;
 
       [[ -f /usr/bin/figlet ]] && figlet django-tagging | perl -pe 's{( +)}{chr(46) x length($1)}e';
-      easy_install -q django-tagging;
+      easy_install -q django-tagging==0.3.1;
     SCRIPT
   end
 
